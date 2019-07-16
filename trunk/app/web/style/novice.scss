@@ -1,0 +1,175 @@
+@import './variable.scss';
+
+.modal_cont {
+    // position: fixed;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    // z-index: 1050;
+    z-index: 9999;
+    width:100%;
+    height:100%;
+    // min-width: 1200px;
+    .mask_layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .quit {
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        .select {
+            cursor: pointer;
+        }
+    }
+
+    @at-root .modal_box {
+        position: absolute;
+        img{
+            max-width: 1200px;
+        }
+        >a {
+            position: absolute;
+            background: rgba(0, 0, 0, 0);
+            width: 90px;
+            height: 70px;
+        }
+    }
+}
+
+
+.step1 {
+    .modal_box {
+        left: 50%;
+        top: 255px;
+        transform: translateX(-50%);
+        .prev {
+            display: none;
+        }
+
+        .next {
+            width: 115px;
+            height: 60px;
+            top: 145px;
+            left: 108px;
+        }
+    }
+
+}
+
+.step2 {
+    .modal_box {
+        left: 50%;
+        top: 117px;
+        transform: translateX(-50%);
+        img{
+            transform: translateX(-37px);
+        }
+        .next {
+            top: 268px;
+            left: 516px;;
+        }
+
+        .prev {
+            top: 268px;
+            left: 412px;
+        }
+    }
+}
+.step3 {
+    .modal_box {
+        width:1200px;
+        top:165px;
+        left:50%;
+        transform: translateX(-50%);
+        img{
+            position: absolute;
+            right:0;
+        }
+        .next {
+            top: 254px;
+            right: 390px;
+        }
+
+        .prev {
+            top: 254px;
+           right:502px;
+        }
+    }
+}
+.step4 {
+    .modal_box {
+        width:1200px;
+        top:200px;
+        left:50%;
+        transform: translateX(-50%);
+        &.hasBlock{
+            top: 362px;
+        }
+        img{
+            position: absolute;
+            right:0;
+        }
+        .next {
+            top: 226px;
+            right: 60px;
+        }
+
+        .prev {
+            top: 226px;
+            right: 172px;
+        }
+    }
+}
+.step5 {
+    .modal_box {
+        width:1200px;
+        top:92px;
+        left:50%;
+        transform: translateX(-50%);
+        &.hasBlock{
+            top: 254px;
+        }
+        img{
+            position: absolute;
+            right:0;
+        }
+        .next {
+            top: 52px;
+            right: 41px;
+        }
+
+        .prev {
+            top:60px;
+            right: 488px;
+        }
+    }
+}
+.step6 {
+    .modal_box {
+        top: 134px;
+        left:50%;
+        transform: translateX(-50%);
+        img{
+            transform:translateX(-38px);
+        }
+        .next {
+            top:720px;
+            left: 531px;
+            width:97px;
+            height:54px;
+        }
+
+        .prev {
+           display: none;
+        }
+    }
+}

@@ -1,0 +1,115 @@
+// page: 主页动态-关注企业
+@charset "utf-8";
+@import "variable";
+@import 'icon';
+
+.pos_list {
+    margin-top: -1px;
+
+    li {
+        padding: 0 $padding_left_right;
+
+        @at-root.pos_item {
+            position: relative;
+            font-size: 14px;
+            padding: 22px 0 22px 76px;
+            border-top: 1px solid $color_border;
+
+            .com_logo {
+                position: absolute;
+                left: 0;
+                top: 29px;
+                width: 65px;
+                height: 65px;
+                border: 1px solid $color_border;
+
+                img {
+                    width: 100%;
+                }
+            }
+
+            .custom_btn_m {
+                position: absolute;
+                right: 0;
+                top: 56px;
+
+                /* &.has_attention {
+                    background: none;
+                    color: $color_main;
+
+                    &:hover {
+                        background: $color_main;
+                        color: #fff;
+                    }
+                } */
+            }
+
+            .col_0 {
+                display: inline-block;
+                width: 46%;
+                @extend %text-overflow;
+            }
+
+            .line_1 {
+                .time {
+                    float: right;
+                    display: inline-block;
+                    color: #999;
+                    margin-top: 3px;
+                }
+
+                >p {
+                    display: inline-block;
+                    vertical-align: middle;
+
+                    .com_name {
+                        display: inline-block;
+                        max-width: 220px;
+                        font-size: 16px;
+                        color: $color_blue;
+                        @extend %text-overflow;
+                    }
+                }
+
+                .text {
+                    display: inline-block;
+                    vertical-align: middle;
+                    color: #666;
+                }
+            }
+
+            .line_2 {
+                margin-bottom: 6px;
+
+                span {
+                    display: inline-block;
+                    vertical-align: middle;
+                    color: #666;
+                }
+
+                .pos_name {
+                    display: inline-block;
+                    vertical-align: middle;
+                    max-width: 160px;
+                    color: $color_main;
+                    margin-left: 24px;
+                    @extend %text-overflow;
+
+                    &:nth-child(2) {
+                        margin-left: 0;
+                    }
+
+                    @media screen and (max-width:1250px) {
+                        max-width: 150px;
+                        margin-left: 6px;
+                    }
+                }
+            }
+
+            .line_3 {
+                max-width: 70%;
+                @extend %light_point;
+            }
+        }
+    }
+}

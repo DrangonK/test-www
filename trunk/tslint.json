@@ -1,0 +1,24 @@
+{
+  "defaultSeverity": "warning",
+  "extends": "tslint-config-standard",
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**"
+    ]
+  },
+  "globals":{
+      "require":true
+  },
+  "rules":{
+      "no-consecutive-blank-lines": false,
+      "space-before-function-paren": false,
+      "no-conditional-assignment": false,
+      "comment-format": [
+          true,
+          "check-space"
+        ],
+        "quotemark": false,
+        "ter-indent":false
+  },
+  "rulesDirectory": ["app/web/"]
+}

@@ -1,0 +1,10 @@
+{
+  "common.css": "/public/dist/common.css?t=5609278cccec7638325a",
+  "common.js": "/public/dist/common.js?t=82a1982a10605d374ec8",
+  "job5156.js": "/public/dist/job5156.js?t=28d84142415c064ef7d4",
+  "login.js": "/public/dist/login.js?t=448ce33af2a75c5f6ee2",
+  "register.css": "/public/dist/register.css?t=32dafa64b43035073ec1",
+  "register.js": "/public/dist/register.js?t=fce30a65a57b49269eae",
+  "common.scss": "/public/dist/icon-sprites.png?t=7647b6c2717d01ff429c9a86ee1cafa5",
+  "register.scss": "/public/dist/zt_logo_02.png?t=80b757e8f245529afaf0162ae700eabe"
+}

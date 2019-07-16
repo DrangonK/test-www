@@ -1,0 +1,193 @@
+// page: 主页动态-邀请面试
+@charset "utf-8";
+@import "variable";
+@import 'icon';
+
+//职位列表
+@at-root.pos_list {
+    margin-top: -1px;
+
+    &.edit {
+        li {
+            padding-left: 80px;
+        }
+    }
+
+    li {
+        font-size: 14px;
+        color: #666;
+        padding: 0 $padding_left_right;
+        position: relative;
+
+        // 过期消息
+        &.overdue {
+
+            .line_2,
+            .line_3 {
+                * {
+                    color: #999 !important;
+                }
+
+                .custom_btn_m {
+                    border-color: #999 !important;
+                    background: none !important;
+                }
+            }
+        }
+
+        .checked_item {
+            position: absolute;
+            left: $padding_left_right;
+            top: 64px;
+            cursor: pointer;
+            @include sprite($checked_default_01);
+
+            &.checked {
+                @include sprite($checked_ok_01)
+            }
+
+            input {
+                cursor: pointer;
+                opacity: 0;
+                filter: alpha(opacity=0);
+            }
+        }
+
+        @at-root .checked_all {
+            &.checked {
+                >i {
+                    @include sprite($checked-ok-01);
+                }
+            }
+
+            >i {
+                margin-right: 10px;
+                @include sprite($checked_default_01)
+            }
+        }
+
+        @at-root.pos_item {
+            border-top: 1px solid $color_border;
+            padding: 17px 0;
+            position: relative;
+
+            .com_logo {
+                position: absolute;
+                left: 0;
+                top: 30px;
+                width: 64px;
+                height: 64px;
+                border: 1px solid $color_border;
+                background: #fff;
+                margin-right: 12px;
+                // overflow: hidden;
+
+                &.new {
+                    &:before {
+                        content: "";
+                        position: absolute;
+                        right: -4px;
+                        top: 0;
+                        width: 10px;
+                        height: 10px;
+                        background: $color_red;
+                        border-radius: 50%;
+                    }
+                }
+
+                img {
+                    width: 100%;
+                }
+            }
+
+            //过期
+            .icon-overdue {
+                position: absolute;
+                top: 45px;
+                right: 27%;
+            }
+
+            /*  .line_1 {
+                color: #909399;
+                margin-bottom: 9px;
+
+                i,
+                span {
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+
+                .icon_01 {
+                    margin-right: 13px;
+                }
+
+                .icon_02 {
+                    margin-right: 5px;
+                }
+            } */
+
+            .line_2 {
+                padding-left: 77px;
+                margin-bottom: 5px;
+
+                .pos_name {
+                    display: inline-block;
+                    vertical-align: middle;
+                    max-width: 200px;
+                    font-size: 16px;
+                    color: $color_blue;
+                    @extend %text-overflow;
+
+                    &:hover {
+                        color: $color_main;
+                    }
+                }
+
+                .com_name {
+                    max-width: 200px;
+                    float: right;
+                    color: #333;
+                    @extend %text-overflow;
+
+                    &:hover {
+                        color: $color_main;
+                    }
+                }
+
+                >i {
+                    margin-left: 10px;
+                    @extend %middle;
+                }
+
+                >span {
+                    display: inline-block;
+                    vertical-align: middle;
+                    font-size: 16px;
+                    color: $color_main;
+                    margin-left: 28px;
+                }
+            }
+
+            .line_3 {
+                position: relative;
+                padding-left: 77px;
+
+                >div {
+                    width: 70%;
+                    line-height: 24px;
+                    @extend %text-overflow;
+                }
+
+                .custom_btn_m {
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                }
+            }
+
+            .line_4 {
+                padding-left: 77px;
+            }
+        }
+    }
+}
