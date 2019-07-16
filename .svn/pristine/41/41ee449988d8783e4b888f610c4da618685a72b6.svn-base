@@ -1,0 +1,14 @@
+// page: 登录页面
+import '../plug/validation/jquery.validate'
+import '../plug/validation/additional-methods'
+import '../plug/validation/messages_zh'
+// import '../scss/login.scss'
+
+
+
+var login ={
+    init(){
+        console.log('hello this is login page2')
+    }
+};
+login.init();

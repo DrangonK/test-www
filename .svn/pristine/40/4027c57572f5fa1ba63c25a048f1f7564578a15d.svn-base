@@ -1,0 +1,24 @@
+// page: 修改密码
+@charset "utf-8";
+@import "../variable";
+@import '../icon';
+
+.title_min {
+    font-size: 16px;
+    color: #333;
+}
+
+form {
+    width: 360px;
+    margin-left: 120px;
+
+    >p {
+        font-size: 14px;
+        color: #333;
+        padding: 22px 0;
+    }
+
+    [type="button"] {
+        width: 145px !important;
+    }
+}

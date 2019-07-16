@@ -1,0 +1,353 @@
+// page: 注册页面
+import '../plug/validation/jquery.validate'
+import '../plug/validation/additional-methods'
+import '../plug/validation/messages_zh'
+import '../plug/common'
+import '../scss/register.scss';
+// import '../scss/common22.scss';
+// import '../plug/jBox/Skins/Default/jbox.css'
+import '../plug/jBox/jquery.jBox'
+
+console.log('这是注册页面')
+
+var $obj = {};
+var $authcodePic = $(".authcodePic");
+var obj = {
+    /**
+     * 密码强度
+     * @param obj   输入框
+     * @param tipBar
+     */
+    strengthPW: function (obj, tipBar) {
+        var $obj = obj, $tipBar = tipBar;
+        $obj.keyup(function (e) {
+            var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+            var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+            var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+            if (strongRegex.test($(this).val())) {
+                $tipBar.removeClass().addClass("Pstrength pwordHide");
+            } else if (mediumRegex.test($(this).val())) {
+                $tipBar.removeClass().addClass("Pstrength pwordMid");
+            } else if (enoughRegex.test($(this).val())) {
+                $tipBar.removeClass().addClass("Pstrength pwordLow");
+            } else {
+                $tipBar.removeClass().addClass("Pstrength");
+            }
+            return true;
+        });
+    },
+    //获取验证码
+    getCode: function ($obj, mobile, imgCaptcha) {
+        var self = this;
+        $.ajax({
+            url: "/register/per/register/send/validCode.json?t=" + new Date().getTime(),
+//                url:'/register/per/register/send/notImg/ValidCode.json?t=' + new Date().getTime(),
+            data: {mobile: mobile, imgCaptcha: imgCaptcha},
+            success: function (data) {
+                switch (data.status) {
+                    case 0 :
+                        $obj.text("重新获取").data("act", true);
+                        $obj.html("<span id='js_times'>60</span>S重新获取");
+                        common.fn.loadSecond($("#js_times"), 60, function () {
+                            $obj.text("重新获取").data("act", false);
+                        });
+                        break;
+                    case 1 :
+                        if ($(".img_captcha_group").is(":visible")) {
+                            $.jBox.tip(data.msg, "tip");
+                        }
+                        $(".img_captcha_group").show();
+                        $authcodePic.click();
+                        $obj.data("act", false);
+                        break;
+                    case 2 :
+                        $("#mobileForm").addClass("captchaShow");
+                        $authcodePic.click();
+                        $obj.data("act", false);
+                        $.jBox.tip(data.msg, "error");
+                        break;
+                    default :
+                        $.jBox.error(data.msg, "提示");
+                        $obj.data("act", false);
+                        break;
+                }
+            }
+        })
+    },
+    //表单验证
+    validateOpt: function (type) {
+        var username = {
+            required: true, email3: true, maxlength: 50, remote: {
+                type: "post",
+                url: "/check/per/account.json?t=" + new Date().getTime(),
+                data: {
+                    email: function () {
+                        return $("#username").val();
+                    }
+                },
+                dataType: "script",
+                dataFilter: function (data, type) {
+                    var r = $.parseJSON(data);
+                    return r.returnStatus;
+                }
+            }
+        };
+        var password = '#emailPassword';
+        var password1 = "确认密码不能为空!";
+        if (type == "mobile") {
+            username = {required: true, isMobile: true};
+            password = '#mobilePassword';
+            password1 = "验证密码不能为空!";
+        }
+        return {
+            ignore: ".ignore",
+            onfocusout: function (element, event) {
+                //上面的ignore不知道为什么失效了
+                if ($(element).is(".ignore")) return;
+            },
+            rules: {
+                username: username,
+                password: {required: true, unBlank: true, rangelength: [6, 20]},
+                password1: {required: true, equalTo: password},
+                captcha: {required: true, isImgCaptcha: true},
+                smsValidCode: {required: true, isCaptcha: true},
+                agreement: "required"
+            },
+            messages: {
+                username: {
+                    required: "账号不能为空!",
+                    email3: "请使用邮箱注册!",
+                    maxlength: "用户名长度超过{0}位!",
+                    remote: '此邮箱已注册，<a href="/forget/per/step1">忘记密码</a>！',
+                    isMobile: "请输入正确的手机号!"
+                },
+                password: {
+                    required: "密码不能为空!",
+                    rangelength: "密码不能少于6位数！"
+                },
+                password1: {required: password1, equalTo: '您两次输入的密码不一致!'},
+                captcha: {required: '验证码不能为空!', isImgCaptcha: "请输入正确的验证码!"},
+                smsValidCode: {required: '短信验证码不能为空!', isCaptcha: "请输入正确的短信验证码!"},
+                agreement: '请勾选用户协议!'
+            },
+            errorPlacement: function (error, element) {
+                element.addClass("error").siblings(".tips").html(error);
+            },
+            submitHandler: function (form) {
+                var $form = $(form),
+                    data = $form.serializeArray(),
+                    url = $form.attr('action'),
+                    $loginBtn = $form.find(".loginBtn");
+                if ($loginBtn.prop('disabled') || $form.data("active")) {
+                    return;
+                }
+                $form.data("active", true);
+                $loginBtn.prop('disabled', true).val("请稍等，处理中…");
+
+                var $password = $form.find('[name="password"]');
+
+                if ($form.is("#mobileForm")) {
+                    var $password1 = $form.find('[name="password"]');
+                } else {
+                    var $password1 = $form.find('[name="password1"]');
+                }
+
+                common.cryptogram.encryptions([$password.val(), $password1.val()], function (pwd) {
+                    if ($form.is("#mobileForm")) {
+                        $.each(data, function (i, item) {
+                            if (item.name == "password") item.value = pwd[0];
+                        });
+                    } else {
+                        $.each(data, function (i, item) {
+                            if (item.name == "password") item.value = pwd[0];
+                            if (item.name == "password1") item.value = pwd[1];
+                        });
+                    }
+
+                    $.ajax({
+                        type: 'post',
+                        url: url + '.json',
+                        data: data
+                    }).success(function (json) {
+                        if (json.error) {
+                            $.jBox.error(json.msg, "信息提示", {
+                                closed: function () {
+                                    $authcodePic.click();
+                                    $form.data("active", false);
+                                    $loginBtn.prop('disabled', false).val("重新注册");
+                                }
+                            });
+                        } else {
+                            var url = location.search;
+                            var triggerLoginPopup = {};
+                            if (url.indexOf("?") != -1) {
+                                var str = url.substr(1);
+                                triggerLoginPopup = common.url.par2Json(str, true);
+                                if (triggerLoginPopup.fromViewComContact != "true" && !triggerLoginPopup.siteEnName) {
+                                    triggerLoginPopup = {}
+                                }
+                            }
+                            var argument = $.extend({}, {account: $form.find('[name="username"]').val()}, triggerLoginPopup || {});
+                            logPerBehavWeb('reg', url, argument);
+                            $loginBtn.val("注册成功");
+                            location.href = json.toUrl;
+                        }
+
+                    }).fail(function () {
+
+                        $form.data("active", false);
+                        $loginBtn.prop('disabled', false).val("重新注册");
+                    })
+                });
+
+                return false
+            },
+            success: function (label, element) {
+                $(element).removeClass("error").siblings(".tips").html("");
+                return true;
+            }
+        }
+    }
+};
+
+//刷新验证码
+$authcodePic.on("click", function () {
+    var url = $authcodePic.attr("src").split("?")[0];
+    common.fn.reloadcode($authcodePic, url);
+    return false;
+});
+
+//协议复选框
+$(".simTxt").click(function () {
+    $(".simIcon").click();
+});
+$(".simIcon").on("click", function () {
+    var $simIcon = $(".simIcon");
+
+    if ($simIcon.is(".checked")) {
+        $simIcon.removeClass("checked").siblings('[name="agreement"]').val("");
+    } else {
+        $simIcon.addClass("checked").siblings('[name="agreement"]').val(1);
+    }
+});
+$(".getIdCode").on("click", function () {
+    var $this = $(this);
+    var act = $this.data("act");
+    if (act) {
+        return false;
+    }
+    $this.data("act", true);
+    var mobile = $("#mobile").val();
+    var imgCaptcha = $("#imgCaptcha").val();
+    if (!mobile) {
+        $.jBox.error("账号不能为空!", "提示");
+        $this.data("act", false);
+        return false;
+    }
+
+    if (!(/^((1[3-9][0-9])+\d{8})$/.test(mobile))) {
+        //$.jBox.error("请输入正确的手机号码!","提示");
+        $this.data("act", false);
+        return false;
+    }
+    $.ajax({
+        url: "/register/per/register/moblie/valid.json?t=" + new Date().getTime(),
+        data: {mobile: mobile},
+        dataType: "json",
+        success: function (data) {
+            if (!data.existFlag) {
+                obj.getCode($this, mobile, imgCaptcha);
+                return false;
+            }
+            if (data.registerFlag) {
+                var submit = function (v) {
+                    if (v == "ok") {
+                        window.location.href = "/login/per";
+                    }
+                    return true;
+                };
+                $.jBox.error("账号已存在，请登录！", "提示", {buttons: {'登录': 'ok', '取消': 'cancel'}, submit: submit});
+                $this.data("act", false);
+            } else {
+                var submit = function (v) {
+                    if (v == "ok") {
+                        window.location.href = "/login/per";
+                    } else {
+                        obj.getCode($this, mobile, imgCaptcha);
+                        return true;
+                    }
+                    $this.data("act", false);
+                }
+                $.jBox.confirm('该账号已经存在，继续获取会导致原先的账号无法正常使用！', "提示", submit, {
+                    buttons: {
+                        '登录': 'ok',
+                        '继续注册': 'cancel'
+                    }, closed: function () {
+                        $this.data("act", false);
+                    }
+                })
+            }
+        },
+        error: function () {
+            $.jBox.error("请求验证码失败,请稍后再试！", "提示");
+            $this.data("act", false);
+        }
+    });
+    return false;
+});
+
+var mobileValidate = $("#mobileForm").validate(obj.validateOpt("mobile"));
+
+
+/*
+ * 造成二次提交*/
+$(".loginBtn").on("click", function () {
+    $(this).closest("form").submit();
+});
+
+var $doc = $(document);
+
+// enter键提交表单
+$doc.on('keyup.login', function (evt) {
+    if (evt.keyCode === 13) {
+        $("#mobileForm").submit();
+    }
+});
+
+//IE下去除眼睛
+/*if (common.isIE()) {
+    $(".isSeePw").remove();
+}*/
+$(".isSeePw").click(function () {
+    var $this = $(this)
+    var $mobilePassword = $("#mobilePassword");
+    if ($(this).is('.canSee')) {
+        $this.removeClass('canSee');
+        $mobilePassword.attr('type', 'password')
+    } else {
+        $this.addClass('canSee');
+        $mobilePassword.attr('type', 'text')
+    }
+});
+
+
+var $mobileShow = $(".mobileShow");
+var $mobile = $("#mobile");
+
+$mobileShow.keypress(function (e) {
+    if (e.keyCode != 8) {
+        var $this = $(this);
+        var val = $this.val();
+
+        if (val.length == 3 || val.length == 8) {
+            $this.val(val + '-');
+        }
+    }
+}).keyup(function () {
+    $mobile.val($(this).val().replace(/-/g, ''));
+    if ($("#mobile").valid()) {
+        $(".getIdCode").removeClass("disable")
+    } else {
+        $(".getIdCode").addClass("disable")
+    }
+});

@@ -1,0 +1,90 @@
+const SpritesmithPlugin = require('webpack-spritesmith')
+const path = require('path')
+const _ = require('lodash');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+module.exports = {
+    baseUrl: '/public',
+    outputDir: 'app/public',
+    indexPath: '../view/index.html',
+    pages: {
+        index: {
+            entry: './app/web/main.ts'
+        }
+    },
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'http://eyas.api.sztest.job5156.com',
+                // target: 'http://192.168.8.98:8500/',
+                // target: 'http://192.168.8.195:8500/',// 调用hwf 本地服务器，测试导出简历
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': ''
+                }
+            },
+        }
+    },
+    configureWebpack: {
+        plugins: [
+            new SpritesmithPlugin({
+                src: {
+                    cwd: path.resolve(__dirname, './app/web/images/icon'),
+                    glob: '*.png'
+                },
+                spritesmithOptions: {
+                    padding: 4
+                },
+                target: {
+                    image: path.resolve(__dirname, './public/images/icon-sprites.png'),
+                    css: [
+                        [
+                            path.resolve(__dirname, './app/web/style/_icon.scss'),
+                            {
+                                format: 'handlebars_based_template'
+                            }
+                        ]
+                    ]
+                },
+                apiOptions: {
+                    //css 引入雪碧图的路径。根目录：/ => public
+                    cssImageRef: `/public/images/icon-sprites.png?t=` + new Date().getTime(),
+                },
+                customTemplates: {
+                    'handlebars_based_template': './scss.template.handlebars'
+                }
+            }),
+            new CopyWebpackPlugin([{
+                from: path.join(__dirname, 'public/css'),
+                to: path.join(__dirname, 'app/public/css'),
+                ignore: ['.*']
+            },])
+        ],
+        resolve: {
+            alias: {
+                '@': 'app/web',
+                view: 'app/web/view',
+            },
+            modules: ["node_modules", "spritesmith-generated"]
+        }
+        /* ,
+                rules: [{
+                    test: /\.png$/,
+                    use: [
+                        'file-loader?name=i/[hash].[ext]'
+                    ]
+                }] */
+    },
+    chainWebpack: config => {
+        // 修改vue项目的 ts配置
+        config.module.rule('ts').use('ts-loader')
+            .loader('ts-loader')
+            .tap(options => {
+                _.merge(options, {
+                    configFile: path.join(__dirname, './app/web/tsconfig.json')
+                });
+                return options
+            });
+        config.plugins.delete('prefetch');
+    }
+}
